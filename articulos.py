@@ -207,9 +207,9 @@ for archivo in os.listdir("./fotos/articulos"):
 		
 		print("Actualizando...",archivo)
 		datos = {}
-		nombre_producto = capitalize("".join(archivo.split("irenic - "))[0:-4])
+		nombre_producto = "".join(archivo.split("irenic - "))[0:-4]
 
-		datos["name"] = nombre_producto
+		datos["name"] = nombre_producto.title()
 		nombre_archivo = "-".join(nombre_producto.split())
 
 		datos["images"] = [
