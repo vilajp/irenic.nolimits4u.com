@@ -42,12 +42,12 @@ def main():
 				nro +=1
 			else:
 				nro = 0 
-	for k,v in lista.items():
-		
-		try:
-			print(k,v) 
-		except:
-			print(k[grupo],"no tiene precio minorista", end="\n")
+	for k in lista.keys():
+		for q, v in lista[k].items():
+			try:
+				print(q,v) 
+			except:
+				print(k[grupo],"no tiene precio minorista", end="\n")
 
 
 
