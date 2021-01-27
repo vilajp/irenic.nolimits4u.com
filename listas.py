@@ -16,32 +16,38 @@ def main():
 	may = "Mayorista"
 	mino = "Minorista"
 	nro = 0
+	grupo = str(nro)
+	lista[grupo] = {}
 
 	for row in sheet.iter_rows():
 		
 		for cell in row:
 
 			if (nro%3)==0:
-				
+					grupo = str(nro)
 					articulo = cell.value
-					lista[articulo] = {}
+					try:	
+						lista[grupo][articulo] = {}
+					except:
+						lista[grupo] = {}
+						lista[grupo][articulo] = {}
 
 				
 			elif (nro%3)==1 and cell.value != None and type(cell.value)!=str:
-				lista[articulo][mino] = cell.value
+				lista[grupo][articulo][mino] = cell.value
 				
 			elif (nro%3)==2 and cell.value != None and type(cell.value)!=str:
-				lista[articulo][may] = cell.value
+				lista[grupo][articulo][may] = cell.value
 			if nro < 9:	
 				nro +=1
 			else:
 				nro = 0 
 	for k,v in lista.items():
-		if v != {}:
-			try:
-				print(k,v, end="\n") 
-			except:
-				print(k,"no tiene precio minorista", end="\n")
+		
+		try:
+			print(k,v) 
+		except:
+			print(k[grupo],"no tiene precio minorista", end="\n")
 
 
 
