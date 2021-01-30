@@ -46,13 +46,25 @@ def main():
 				nro +=1
 			else:
 				nro = 0 
+	tipos = {}
+	n_tipo = 0
+	
 	for k in lista.keys():
 		for q, v in lista[k].items():
 			if v=={}:
+			
 				tipo = q
+				n_tipo +=1
 				continue
-			v["tipo"] = tipo 
+			
+			tipos[n_tipo] = tipo
+			v["tipo"] = n_tipo
+			
+				
+			
 			print(q,v)
+
+	print(tipos.items())
 
 if __name__ == '__main__':
 	main()
