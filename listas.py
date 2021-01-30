@@ -13,8 +13,6 @@ def main():
 	sheet = wb_obj.active
 	print(sheet)
 	lista = {}
-	may = "Mayorista"
-	mino = "Minorista"
 	nro = 0
 	grupo = str(nro)
 	lista[grupo] = {}
@@ -34,22 +32,27 @@ def main():
 
 				
 			elif (nro%3)==1 and cell.value != None and type(cell.value)!=str:
-				lista[grupo][articulo][mino] = cell.value
+				lista[grupo][articulo]["min"] = cell.value
 				
 			elif (nro%3)==2 and cell.value != None and type(cell.value)!=str:
-				lista[grupo][articulo][may] = cell.value
+				lista[grupo][articulo]["may"] = cell.value
+			try:
+				lista[grupo][articulo]["margen"] = round(100 * (lista[grupo][articulo]["min"] - \
+				lista[grupo][articulo]["may"]) / lista[grupo][articulo]["may"],2)
+			except:
+				next
+
 			if nro < 9:	
 				nro +=1
 			else:
 				nro = 0 
 	for k in lista.keys():
 		for q, v in lista[k].items():
-			try:
-				print(q,v) 
-			except:
-				print(k[grupo],"no tiene precio minorista", end="\n")
-
-
+			if v=={}:
+				tipo = q
+				continue
+			v["tipo"] = tipo 
+			print(q,v)
 
 if __name__ == '__main__':
 	main()
