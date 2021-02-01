@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import re
+import json
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -21,7 +22,7 @@ cur.execute('''CREATE TABLE IF NOT EXISTS ProductosShiri
 url = "https://www.shirinatural.com.ar/productos/?mpage=3"
 
 try:
-    document = urlopen(url)#, context=ctx
+    document = urlopen(url, context=ctx)
 
     html = document.read()
 
@@ -41,15 +42,28 @@ except KeyboardInterrupt:
 except:
     print("Unable to retrieve or parse page")
 
-# Retrieve all of the div tags
+# Retrieve all of the script tags
 tags = soup('script')
 count = 0
-producto = {}
+productos = "[\n"
 for tag in tags:
     tipo = tag.get("type", None)
 
     if tipo == "application/ld+json":
-        print(tag)
+        if '"@type": "Product",' in str(tag):
+            productos += str(tag)[len('<script type="application/ld+json">'):-len('</script>')].strip() + ","
+
+            continue
+
+productos = productos[:-1] + "\n]"
+
+print(productos)
+
+todos = json.loads(productos)
+
+for item in todos:
+    print(item["name"])
+
 
     # cur.execute('INSERT OR IGNORE INTO Pages (url, html, new_rank) VALUES ( ?, NULL, 1.0 )', ( href, ) )
     # count = count + 1
@@ -65,8 +79,6 @@ for tag in tags:
     # # print fromid, toid
     # cur.execute('INSERT OR IGNORE INTO Links (from_id, to_id) VALUES ( ?, ? )', ( fromid, toid ) )
     #
-
-print(count)
 
 cur.close()
 
