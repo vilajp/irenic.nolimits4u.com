@@ -1,5 +1,6 @@
 import openpyxl
 import sys
+import sqlite3
 
 
 def main():
@@ -16,7 +17,7 @@ def main():
     nro = 0
     grupo = str(nro)
     lista[grupo] = {}
-
+    articulo = ""
     for row in sheet.iter_rows():
 
         for cell in row:
@@ -30,14 +31,15 @@ def main():
                     lista[grupo] = {}
                     lista[grupo][articulo] = {}
 
-            elif (nro % 3) == 1 and not None and type(cell.value) != str:
+            elif (nro % 3) == 1 and cell.value is not None and type(cell.value) != str:
                 lista[grupo][articulo]["min"] = cell.value
 
-            elif (nro % 3) == 2 and not None and type(cell.value) != str:
+            elif (nro % 3) == 2 and cell.value is not None and type(cell.value) != str:
                 lista[grupo][articulo]["may"] = cell.value
             try:
                 lista[grupo][articulo]["margen"] = round(100 * (lista[grupo][articulo]["min"] - \
-                lista[grupo][articulo]["may"]) / lista[grupo][articulo]["may"], 2)
+                                                                lista[grupo][articulo]["may"]) / lista[grupo][articulo][
+                                                             "may"], 2)
             except:
                 next
 
@@ -47,6 +49,7 @@ def main():
                 nro = 0
     tipos = {}
     n_tipo = 0
+    tipo = ""
 
     for k in lista.keys():
         for q, v in lista[k].items():
@@ -62,6 +65,18 @@ def main():
 
     print(tipos.items())
 
+    conn = sqlite3.connect('spider.sqlite')
+    cur = conn.cursor()
+    for k in lista.keys():
+        for q, v in lista[k].items():
+            try:
+                cur.execute('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (q, v["min"]))
+                print("Actualizando...", q, v["min"])
+                conn.commit()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                continue
+    cur.close()
 
 if __name__ == '__main__':
     main()
