@@ -19,55 +19,58 @@ cur = conn.cursor()
 cur.execute('''CREATE TABLE IF NOT EXISTS ProductosShiri
     (id INTEGER PRIMARY KEY, nombre TEXT UNIQUE, precio INTEGER)''')
 
-url = "https://www.shirinatural.com.ar/productos/?mpage=3"
+alfabeto = "abcdefghijklmnñopqrstuvwxyz"
+numeros = "1234567890"
 
-try:
-    document = urlopen(url, context=ctx)
+for i in alfabeto + numeros:
 
-    html = document.read()
+    url = "https://www.shirinatural.com.ar/ar/search/?q=" + i
 
-    if document.getcode() != 200 :
-        print("Error on page: ",document.getcode())
+    try:
+        print("Abriendo....", url)
+        document = urlopen(url, context=ctx)
 
-    if 'text/html' != document.info().get_content_type() :
-        print("Ignore non text/html page")
+        html = document.read()
 
-    print('('+str(len(html))+')', end=' ')
+        if document.getcode() != 200 :
+            print("Error on page: ",document.getcode())
 
-    soup = BeautifulSoup(html, "html.parser")
-except KeyboardInterrupt:
-    print('')
-    print('Program interrupted by user...')
+        if 'text/html' != document.info().get_content_type() :
+            print("Ignore non text/html page")
 
-except:
-    print("Unable to retrieve or parse page")
+        soup = BeautifulSoup(html, "html.parser")
 
-# Retrieve all of the script tags
-tags = soup('script')
-count = 0
-productos = "[\n"
-for tag in tags:
-    tipo = tag.get("type", None)
+    except KeyboardInterrupt:
+        print('')
+        print('Program interrupted by user...')
 
-    if tipo == "application/ld+json":
-        if '"@type": "Product",' in str(tag):
-            productos += str(tag)[len('<script type="application/ld+json">'):-len('</script>')].strip() + ","
+    except:
+        print("Unable to retrieve or parse page")
 
-            continue
+    # Retrieve all of the script tags
+    tags = soup('script')
+    count = 0
+    productos = "[\n"
+    for tag in tags:
+        tipo = tag.get("type", None)
 
-productos = productos[:-1] + "\n]"
+        if tipo == "application/ld+json":
+            if '"@type": "Product",' in str(tag):
+                productos += str(tag)[len('<script type="application/ld+json">'):-len('</script>')].strip() + ","
 
-print(productos)
+                continue
 
-todos = json.loads(productos)
+    productos = productos[:-1] + "\n]"
 
-for item in todos:
-    print(item["name"])
+    todos = json.loads(productos)
 
+    for item in todos:
 
-    # cur.execute('INSERT OR IGNORE INTO Pages (url, html, new_rank) VALUES ( ?, NULL, 1.0 )', ( href, ) )
+        cur.execute('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (item["name"],
+                                                                                              item["offers"]["price"]))
+
     # count = count + 1
-    # conn.commit()
+    conn.commit()
     #
     # cur.execute('SELECT id FROM Pages WHERE url=? LIMIT 1', ( href, ))
     # try:
