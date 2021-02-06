@@ -5,20 +5,20 @@ import sqlite3
 
 def main():
     try:
-        wb_obj = openpyxl.load_workbook("sentida\\LISTA DE PRECIOS ENERO 2021.xlsx")
+        wb_obj = openpyxl.load_workbook ("sentida\\LISTA DE PRECIOS ENERO 2021.xlsx")
 
     except:
-        print("No se pudo abrir el archivo", sys.exc_info()[0])
+        print ("No se pudo abrir el archivo", sys.exc_info () [0])
         return
 
     sheet = wb_obj.active
-    print(sheet)
+    print (sheet)
     lista = {}
     nro = 0
     grupo = str(nro)
-    lista[grupo] = {}
+    lista [grupo] = {}
     articulo = ""
-    for row in sheet.iter_rows():
+    for row in sheet.iter_rows ():
 
         for cell in row:
 
@@ -37,9 +37,10 @@ def main():
             elif (nro % 3) == 2 and cell.value is not None and type(cell.value) != str:
                 lista[grupo][articulo]["may"] = cell.value
             try:
-                lista[grupo][articulo]["margen"] = round(100 * (lista[grupo][articulo]["min"] - \
-                                                                lista[grupo][articulo]["may"]) / lista[grupo][articulo][
-                                                             "may"], 2)
+                lista[grupo][articulo]["margen"] = round (100 * (lista[grupo][articulo]["min"] -
+                                                                    lista[grupo][articulo]["may"]) /
+                                                             lista[grupo][articulo][
+                                                                 "may"], 2)
             except:
                 next
 
@@ -70,13 +71,44 @@ def main():
     for k in lista.keys():
         for q, v in lista[k].items():
             try:
-                cur.execute('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (q, v["min"]))
-                print("Actualizando...", q, v["min"])
+                cur.execute ('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (q, v ["min"]))
+                print ("Actualizando...", q, v ["min"])
+                conn.commit ()
+            except:
+                print ("Unexpected error:", sys.exc_info () [0])
+                continue
+
+    for k, v in tipos.items ():
+        cur.execute ('INSERT OR IGNORE INTO Categoria (name) VALUES ( ? )', (v,))
+        print ("Actualizando...", v)
+        conn.commit ()
+
+
+    for k in lista.keys():
+        for q, v in lista[k].items():
+
+            try:
+                desc_categ = tipos[v["tipo"]]
+
+                cur.execute("SELECT id, name FROM Categoria where name = ?", (desc_categ, ))
+                categoria = cur.fetchone()
+
+                cur.execute("SELECT nombre, categoria_id FROM ProductosShiri where nombre = ?", (q, ))
+
+                cur.execute('''UPDATE ProductosShiri 
+                            set categoria_id = ? 
+                            where nombre = ?''', (categoria[0], q))
+
+                print(f"Actualizando...{categoria[0]} en {q}")
+
                 conn.commit()
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 continue
+
+
     cur.close()
+
 
 if __name__ == '__main__':
     main()
