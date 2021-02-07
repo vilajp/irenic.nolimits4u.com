@@ -7,7 +7,7 @@ wcapi = API(
     consumer_key="ck_ef3e0827be1490d3c846afd0ad3da4e8c704440d",
     consumer_secret="cs_3db60cc6e72d0b353c2b4421694701bfe307e9e3",
     version="wc/v3",
-    timeout = 10,
+    timeout=10,
     )
 
 '''
