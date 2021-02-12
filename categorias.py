@@ -10,13 +10,15 @@ wcapi = API(
     timeout=10,
 )
 
+
 def creo_datos(accion, datos):
     data = {
-        accion:[
+        accion: [
             datos
         ]
     }
     return data
+
 
 def actualizo_woo(data, salir=False):
     while not salir:
@@ -30,6 +32,7 @@ def actualizo_woo(data, salir=False):
             break
         else:
             print("No pude conectarme, reintentando...")
+
 
 conn = sqlite3.connect('spider.sqlite')
 cur = conn.cursor()
