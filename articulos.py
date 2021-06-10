@@ -52,17 +52,17 @@ productos_woo = wcapi.get("products", params={"per_page": 100}).json()
 nombres_cat_woo = [(x["name"], x["id"]) for x in categorias_woo]
 nombres_cat_base = [categoria_base[1] for categoria_base in categorias_base]
 
-nombres_prod_base = [producto_base[1] for producto_base in productos_base]
+nombres_prod_base = [cada_producto_base[1] for cada_producto_base in productos_base]
 nombres_prod_woo = [y["name"] for y in productos_woo]
 
-for producto_base in productos_base:
+for cada_producto_base in productos_base:
 	datos = {}
-	if producto_base[0] not in nombres_prod_woo:
-		print("Actualizando productos desde base...",producto_base[0])
+	if cada_producto_base[0] not in nombres_prod_woo:
+		print("Actualizando productos desde base...",cada_producto_base[0])
 		quehago = "create"
-		datos["name"] = producto_base[0]
-		datos["price"] = producto_base[1]
-		datos["categories"] = [{"id":}]
+		datos["name"] = cada_producto_base[0]
+		datos["price"] = cada_producto_base[1]
+		datos["categories"] = [{"id":cada_producto_base[2]}]
 
 
 		data = actualizo(quehago, datos)
