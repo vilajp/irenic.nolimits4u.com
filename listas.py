@@ -1,18 +1,25 @@
+import os
 import openpyxl
 import sys
 import sqlite3
 
 
 def main():
+    eleccion_archivo = len(os.listdir("."))+2
+    for archivo in os.listdir("."):
+        print(os.listdir(".").index(archivo), archivo)
+    while eleccion_archivo not in range(len(os.listdir("."))+1):
+        eleccion_archivo = int(input("Seleccione un archivo para abrir:"))
+
     try:
-        wb_obj = openpyxl.load_workbook ("sentida\\LISTA DE PRECIOS ENERO 2021.xlsx")
+        wb_obj = openpyxl.load_workbook("sentida\\LISTA DE PRECIOS ENERO 2021.xlsx")
 
     except:
-        print ("No se pudo abrir el archivo", sys.exc_info () [0])
+        print("No se pudo abrir el archivo", sys.exc_info()[0])
         return
 
     sheet = wb_obj.active
-    print (sheet)
+    print(sheet)
     lista = {}
     nro = 0
     grupo = str(nro)
@@ -71,11 +78,11 @@ def main():
     for k in lista.keys():
         for q, v in lista[k].items():
             try:
-                cur.execute ('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (q, v ["min"]))
-                print ("Actualizando...", q, v ["min"])
-                conn.commit ()
+                cur.execute('INSERT OR IGNORE INTO ProductosShiri (nombre, precio) VALUES ( ?, ? )', (q, v["min"]))
+                print("Actualizando...", q, v["min"])
+                conn.commit()
             except:
-                print ("Unexpected error:", sys.exc_info () [0])
+                print("Unexpected error:", sys.exc_info()[0])
                 continue
 
     for k, v in tipos.items ():
@@ -105,7 +112,6 @@ def main():
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 continue
-
 
     cur.close()
 
