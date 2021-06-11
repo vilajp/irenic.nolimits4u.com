@@ -62,8 +62,7 @@ for cada_producto_base in productos_base:
 		quehago = "create"
 		datos["name"] = cada_producto_base[0]
 		datos["price"] = cada_producto_base[1]
-		datos["categories"] = [{"id":cada_producto_base[2]}]
-
+		datos["categories"] = [{"id": cada_producto_base[2]}]
 
 		data = actualizo(quehago, datos)
 
