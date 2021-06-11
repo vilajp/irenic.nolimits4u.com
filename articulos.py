@@ -58,7 +58,7 @@ nombres_prod_woo = [y["name"] for y in productos_woo]
 for cada_producto_base in productos_base:
 	datos = {}
 	if cada_producto_base[0] not in nombres_prod_woo:
-		print("Actualizando productos desde base...",cada_producto_base[0])
+		print("Actualizando productos desde base...", cada_producto_base[0])
 		quehago = "create"
 		datos["name"] = cada_producto_base[0]
 		datos["price"] = cada_producto_base[1]
@@ -70,7 +70,7 @@ for cada_producto_base in productos_base:
 		actualizo_woo(data)
 
 	else:
-		print(f"{producto_base[0]} ya existe en Woocommerce!")
+		print(f"{cada_producto_base[0]} ya existe en Woocommerce!")
 
 
 
