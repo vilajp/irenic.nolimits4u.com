@@ -3,16 +3,23 @@ import openpyxl
 import sys
 import sqlite3
 
+path = "sentida"
 
 def main():
     eleccion_archivo = len(os.listdir("."))+2
-    for archivo in os.listdir("."):
-        print(os.listdir(".").index(archivo), archivo)
-    while eleccion_archivo not in range(len(os.listdir("."))+1):
+    for archivo in os.listdir(path):
+        print(os.listdir(path).index(archivo), archivo)
+    while eleccion_archivo not in range(len(os.listdir(path))+1):
         eleccion_archivo = int(input("Seleccione un archivo para abrir:"))
+        if eleccion_archivo not in range(len(os.listdir(path))+1):
+            print("Por favor seleccione una de las opciones!")
+
+    archivo_abrir = "".join([path, "\\",os.listdir(path)[eleccion_archivo]])
+    print("Ud elegio abrir ", archivo_abrir)
+    input()
 
     try:
-        wb_obj = openpyxl.load_workbook("sentida\\LISTA DE PRECIOS ENERO 2021.xlsx")
+        wb_obj = openpyxl.load_workbook(archivo_abrir)
 
     except:
         print("No se pudo abrir el archivo", sys.exc_info()[0])
@@ -72,6 +79,7 @@ def main():
             print(q, v)
 
     print(tipos.items())
+    input("hasta aca llegue con el analisis del archivo")
 
     conn = sqlite3.connect('spider.sqlite')
     cur = conn.cursor()
