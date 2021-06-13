@@ -16,29 +16,45 @@ def muestro_titulo(mensaje):
     print("\t", "*" * len(mensaje))
 
 
-def elijo_archivo():
-    mensaje = ""
-    eleccion_archivo = len(os.listdir(path))+1
-    while eleccion_archivo not in range(len(os.listdir(path))):
+def genero_menu(lista, titulo, mensaje =""):
+    lista.append("Salir")
+    seleccion = len(lista)+1
+    while seleccion not in range(len(lista)):
         limpio_pantalla()
-        muestro_titulo("Archivos de Listas de Precio")
-        print("\t"+"*"*(len(os.listdir(path)[0])+3))
-        for archivo in os.listdir(path):
-            print("\t", os.listdir(path).index(archivo), archivo)
+        muestro_titulo(titulo)
+        for cada_opcion in lista:
+            print("\t", lista.index(cada_opcion), cada_opcion)
         print(mensaje)
+
         try:
-            eleccion_archivo = int(input("\n\tSeleccione un archivo para abrir:"))
+            seleccion = int(input("\n\tSeleccione una opcion:"))
+
+        except KeyboardInterrupt:
+            print('')
+            print('Program interrupted by user...')
+            break
+
         except:
             mensaje = "\n\tERROR!!!..UD. NO SELECCIONO UNA OPCION VALIDA!...INTENTE DE NUEVO!"
             continue
-        if eleccion_archivo not in range(len(os.listdir(path))):
+        if seleccion not in range(len(lista)):
             mensaje = "\n\tERROR!!!..UD. NO SELECCIONO UNA OPCION VALIDA!...INTENTE DE NUEVO!"
-    return "".join([path, "\\", os.listdir(path)[eleccion_archivo]])
+    return seleccion
+
+
+def elijo_archivo():
+    eleccion_archivo = genero_menu(os.listdir(path), "Archivos de Lista de Precio")
+    if eleccion_archivo == len(os.listdir(path)):
+        return
+    else:
+        return "".join([path, "\\", os.listdir(path)[eleccion_archivo]])
 
 
 def proceso_excel(archivo_abrir):
     limpio_pantalla()
     muestro_titulo(archivo_abrir)
+    print("\n\tUd elegio abrir: ", archivo_abrir)
+    input("\tContinua?")
     try:
         wb_obj = openpyxl.load_workbook(archivo_abrir)
 
@@ -152,12 +168,20 @@ def proceso_sql(tipos, lista):
     cur.close()
 
 
-def main():
-    archivo_abrir = elijo_archivo()
-    print("\n\tUd elegio abrir: ", archivo_abrir)
-    input("\tContinua?")
-    tipos, lista = proceso_excel(archivo_abrir)
-    proceso_sql(tipos, lista)
+def main(salir=False):
+    while not salir:
+        opcion = genero_menu(["Elijo archivo", "Genero Excel", "Actualizo Base de datos"],
+                             "Procesador-Actualizador de Listas")
+        if opcion == 0:
+            archivo_abrir = elijo_archivo()
+        elif opcion == 1:
+            tipos, lista = proceso_excel(archivo_abrir)
+        elif opcion == 2:
+            proceso_sql(tipos, lista)
+        else:
+            limpio_pantalla()
+            muestro_titulo("Gracias por utilizar este SCRIPT, vuelva pronto")
+            salir = True
 
 
 if __name__ == '__main__':
