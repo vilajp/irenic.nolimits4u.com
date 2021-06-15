@@ -19,6 +19,7 @@ def muestro_titulo(mensaje):
 def genero_menu(lista, titulo, mensaje =""):
     lista.append("Salir")
     seleccion = len(lista)+1
+    salida = False
     while seleccion not in range(len(lista)):
         limpio_pantalla()
         muestro_titulo(titulo)
@@ -39,13 +40,15 @@ def genero_menu(lista, titulo, mensaje =""):
             continue
         if seleccion not in range(len(lista)):
             mensaje = "\n\tERROR!!!..UD. NO SELECCIONO UNA OPCION VALIDA!...INTENTE DE NUEVO!"
-    return seleccion
+        elif seleccion == len(lista)-1:
+            salida = True
+    return [seleccion, salida]
 
 
 def elijo_archivo():
-    eleccion_archivo = genero_menu(os.listdir(path), "Archivos de Lista de Precio")
-    if eleccion_archivo == len(os.listdir(path)):
-        return
+    eleccion_archivo, salida = genero_menu(os.listdir(path), "Archivos de Lista de Precio")
+    if salida:
+        return ""
     else:
         return "".join([path, "\\", os.listdir(path)[eleccion_archivo]])
 
@@ -53,8 +56,9 @@ def elijo_archivo():
 def proceso_excel(archivo_abrir):
     limpio_pantalla()
     muestro_titulo(archivo_abrir)
-    print("\n\tUd elegio abrir: ", archivo_abrir)
-    input("\tContinua?")
+    seleccion, salida = genero_menu(["Realizar Proceso"], "Proceso de archivo Excel")
+    if salida:
+        return ["", ""]
     try:
         wb_obj = openpyxl.load_workbook(archivo_abrir)
 
@@ -118,14 +122,15 @@ def proceso_excel(archivo_abrir):
             print(q, v, end="\r")
 
     print(tipos.items())
-    input("\tSe termino de procesar archivo excel, continua?")
+    mensaje("Se termino de procesar archivo excel")
     return [tipos, lista]
 
 
 def proceso_sql(tipos, lista):
     limpio_pantalla()
-    muestro_titulo("Actualizando base de datos")
-
+    seleccion, salida = genero_menu(["Comenzar actualizacion"], "Actualizacion Base de datos")
+    if salida:
+        return
     conn = sqlite3.connect('spider.sqlite')
     cur = conn.cursor()
     for k in lista.keys():
@@ -169,16 +174,19 @@ def proceso_sql(tipos, lista):
 
 
 def main(salir=False):
+    tipos = ""
+    lista = ""
+    archivo_abrir = ""
     while not salir:
-        opcion = genero_menu(["Elijo archivo", "Genero Excel", "Actualizo Base de datos"],
+        opcion, salida = genero_menu(["Elijo archivo", "Genero Excel", "Actualizo Base de datos"],
                              "Procesador-Actualizador de Listas")
         if opcion == 0:
             archivo_abrir = elijo_archivo()
-        elif opcion == 1:
+        elif opcion == 1 and archivo_abrir:
             tipos, lista = proceso_excel(archivo_abrir)
-        elif opcion == 2:
+        elif opcion == 2 and tipos and lista:
             proceso_sql(tipos, lista)
-        else:
+        elif salida:
             limpio_pantalla()
             muestro_titulo("Gracias por utilizar este SCRIPT, vuelva pronto")
             salir = True
